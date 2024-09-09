@@ -1,15 +1,11 @@
-const express = require('express');
-const Order = require('../models/Order');
+import express from 'express';
+import OrderController from '../controllers/orderControllers.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  try {
-    const orders = await Order.find().populate('user').populate('products');
-    res.json(orders);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+router.get('/orders', OrderController.getAllOrders);
+router.post('/orders', OrderController.createOrder);
+router.get('/orders/:id', OrderController.getOrderById);
+router.delete('/orders/:id', OrderController.deleteOrder);
 
-module.exports = router;
+export default router; // Path: server/routes/orderRoutes.js
