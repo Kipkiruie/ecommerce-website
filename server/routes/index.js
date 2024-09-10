@@ -15,7 +15,7 @@ mainRouter.use('/api', productsRoutes);
 mainRouter.use('/api', reviewRoutes);
 mainRouter.use('/api', miscellaneousRoutes);
 mainRouter.use('/api', paymentRoutes);
-mainRouter.use('/api', authRoutes);
+mainRouter.use('/api/auth', authRoutes);
 mainRouter.use('/api', orderRoutes);
 mainRouter.use('/api', adminRoutes);
 
