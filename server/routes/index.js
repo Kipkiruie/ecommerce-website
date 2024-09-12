@@ -2,6 +2,7 @@
 import express from 'express';
 import AuthController from '../controllers/authController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
+import ProductsController from '../controllers/productsController.js';
 
 
 const router = express.Router();
@@ -15,4 +16,12 @@ router.put('/auth/reset-password/:resetToken', AuthController.resetPassword);
 router.get('/auth/profile', AuthController.getProfile);
 router.put('/auth/profile/update', authMiddleware, AuthController.updateProfile);
 
-export default router; // Path: server/routes/index.js
+
+//products routes
+router.get('/products', ProductsController.getProducts);
+router.get('/products/:id', ProductsController.getProductById);
+router.get('/categories', ProductsController.getCategories);
+router.get('/categories/:categoryName', ProductsController.getProductsByCategory);
+router.get('/search', ProductsController.searchProducts);
+
+export default router; // Path: server/routes/index.j
