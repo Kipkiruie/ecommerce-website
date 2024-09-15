@@ -5,42 +5,49 @@ import User from '../models/userModel.js';
 class AuthController {
 
   async signup(req, res) {
-    // signup logic
     try {
-      const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
 
-      //check if user already exists
-      const findUser = await User.findOne({ email });
-      if (findUser) {
-        return res.status(400).json({ message: 'User already exists' });
+        // Check if user already exists (regardless of role)
+        const findUser = await User.findOne({ email });
+        if (findUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
 
-      }
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-      //hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
-       //create the user
-      const user = await User.create({ name, email, password: hashedPassword });
+        // Create the user (with the default role if not provided)
+        const user = await User.create({ 
+            name, 
+            email, 
+            password: hashedPassword, 
+            role: role || 'customer' 
+        });
 
-      //create jwt token
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
-      });
-      res.status(201).json({
-        message: 'User created successfully',
-        token,
-        user: {
-          id: user_id,
-          name: user.name,
-          email: user.email,
-        },
-      });
-    
+        // Generate JWT token
+        const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
+        return res.status(201).json({
+            message: 'User created successfully',
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
     } catch (error) {
-      res.status(500).json({ error: 'Server error', error });
+        console.error(error); // Log error for debugging
+        return res.status(500).json({ error: 'Server error', details: error.message });
     }
+}
 
-   
-  }
 
   async login(req, res) {
     // login logic
@@ -140,6 +147,28 @@ class AuthController {
       res.status(500).json({ error: 'Server error', details: error });
     }
   }
+  async checkAuth(req, res) {
+    try {
+      const authHeader = req.headers['authorization']; // Get the Authorization header
+      const token = authHeader && authHeader.split(' ')[1]; // Extract the Bearer token
+  
+      if (!token) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
+      // Verify the token
+      jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+          return res.status(403).json({ message: 'Forbidden' });  // Token verification failed
+        }
+        res.status(200).json({ message: 'Authenticated', user });
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Server error', details: error });
+    }
+  }
+  
+  
 
 }
 

@@ -6,44 +6,35 @@ class AdminController {
 
     async addProduct(req, res) {
         try {
-            // Ensure user is an admin
-            const token = req.header('Authorization').replace('Bearer ', '');
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            const user = await User.findById(decoded.userId);
-
-            if (user.role !== 'admin') {
-                return res.status(403).json({ message: 'Access denied. Admins only.' });
-            }
-
-            // Proceed with adding the product
             const { name, description, price, category, stock } = req.body;
 
-            let categoryObj = await Category.findOne({ name: category });
-            if (!categoryObj) {
-                categoryObj = await Category.create({ name: category });
+            // Check if the category exists
+            const existingCategory = await Category.findById(category);
+            if (!existingCategory) {
+                return res.status(400).json({ error: 'Invalid category ID' });
             }
 
-            const newProduct = await Product.create({
+            // Create new product
+            const newProduct = new Product({
                 name,
                 description,
                 price,
-                category: categoryObj._id,
-                stock,
+                category,
+                stock
             });
 
+            await newProduct.save();
             res.status(201).json({ message: 'Product added successfully', product: newProduct });
         } catch (error) {
-            console.error(error);
             res.status(500).json({ error: 'Error adding product', details: error });
         }
     }
     async updateProduct(req, res) {
-        // update product logic
         try {
-            const { productId } = req.params;
+            const { id } = req.params;  // Extract `id` instead of `productId`
             const updates = req.body;
-
-            const updateProduct = await Product.findByIdAndUpdate(productId, updates, { new: true });
+    
+            const updateProduct = await Product.findByIdAndUpdate(id, updates, { new: true });
             if (!updateProduct) {
                 return res.status(400).json({ error: 'Product not found' });
             }
@@ -51,8 +42,8 @@ class AdminController {
         } catch (error) {
             res.status(500).json({ error: 'Error updating product', details: error });
         }
-
-    } 
+    }
+    
 
     async deleteProduct(req, res) {
         // delete product logic

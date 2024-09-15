@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './utils/db.js';
 import mainRouter from './routes/index.js';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ const port = process.env.PORT || 5000;
 
 // middleware
 app.use(express.json());
+app.use(cors({ origin: 'http://localhost:3000' }));
 
 // use main router with /api prefix
 app.use('/', mainRouter);
