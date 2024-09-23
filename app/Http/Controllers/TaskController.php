@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Project;
+use App\Models\Task;
+use App\Http\Resources\TaskResource;
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
+
+class TaskController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $query = Task::query();
+        $sortField = request("sort_field", 'created_at');
+        $sortDirection = request("sort_direction", 'desc'); // Correct the variable name
+       
+        // Filter by name if provided
+        if (request("name")) {
+            $query->where("name", "like", "%" . request("name") . "%");
+        }
+
+        // Filter by status if provided
+        if (request("status")) {
+            $query->where("status", request("status"));
+        }
+
+        // Execute query and paginate results
+        $projects = $query->orderBy($sortField, $sortDirection) // Use $projects instead of $tasks
+            ->paginate(10)
+            ->onEachSide(1);
+
+        // Return the view with the projects data
+        return inertia("Task/Index", [
+            "tasks" => TaskResource::collection($projects), // Corrected to $projects
+            'queryParams' => request()->query() ?: null,
+            'success' => session('success')
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreProjectRequest $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Project $project)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Project $project)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateProjectRequest $request, Project $project)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Project $project)
+    {
+        //
+    }
+}
