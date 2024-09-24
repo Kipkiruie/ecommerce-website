@@ -161,7 +161,8 @@ export default function Index({ auth, tasks, queryParams = null, success }) {
                                                 className="w-16"
                                             />
                                         </td>
-                                        <td className="px-2 py-1"><task className="name"></task></td>
+                                        <td className="px-2 py-1">{task.name}</td>
+
                                         <td className="px-2 py-1">
                                             <span
                                                 className={`inline-block w-32 text-center px-2 py-1 text-xs font-medium text-white ${TASK_STATUS_CLASS_MAP[task.status]}`}
