@@ -1,25 +1,27 @@
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import SelectInput from "@/Components/SelectInput";
-import TextInput from "@/Components/TextInput"; // Assuming TextInput exists
+import TextInput from "@/Components/TextInput"; // Ensure this exists in the correct path
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 
-export default function Create({ auth }) {
-  const { data, setData, post, errors, reset } = useForm({
+export default function Edit({ auth, project }) {
+  const { data, setData, put, errors } = useForm({
     image: "",
-    name: "",
-    status: "",
-    description: "",
-    due_date: "",
+    name: project.name || "",
+    status: project.status || "",
+    description: project.description || "",
+    due_date: project.due_date || "",
   });
 
   const onSubmit = (e) => {
-    e.preventDefault();
-    post(route("project.store"), {
-      // Ensure we are sending the correct headers for file uploads
-      headers: {
-        "Content-Type": "multipart/form-data",
+    e.preventDefault(); // Prevent default form submission
+    put(route("project.update", project.id), {
+      onSuccess: () => {
+        console.log("Project updated successfully!");
+      },
+      onError: (errors) => {
+        console.error("Error updating project:", errors);
       },
     });
   };
@@ -30,12 +32,12 @@ export default function Create({ auth }) {
       header={
         <div className="flex justify-between items-center">
           <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Create New Project
+            Edit Project "{project.name}"
           </h2>
         </div>
       }
     >
-      <Head title="Projects" />
+      <Head title="Edit Project" />
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -44,6 +46,11 @@ export default function Create({ auth }) {
               onSubmit={onSubmit}
               className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
             >
+              {project.image_path && (
+                <div className="mb-4">
+                  <img src={project.image_path} alt="Project" className="w-64" />
+                </div>
+              )}
               <div>
                 <InputLabel htmlFor="project_image_path" value="Project Image" />
                 <input
@@ -72,10 +79,7 @@ export default function Create({ auth }) {
               </div>
 
               <div className="mt-4">
-                <InputLabel
-                  htmlFor="project_description"
-                  value="Project Description"
-                />
+                <InputLabel htmlFor="project_description" value="Project Description" />
                 <TextInput
                   id="project_description"
                   name="description"
@@ -104,6 +108,7 @@ export default function Create({ auth }) {
                 <SelectInput
                   name="status"
                   id="project_status"
+                  value={data.status} // Ensure the current status is displayed
                   className="mt-1 block w-full"
                   onChange={(e) => setData("status", e.target.value)}
                 >
@@ -122,7 +127,7 @@ export default function Create({ auth }) {
                 >
                   Cancel
                 </Link>
-                <button className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
+                <button type="submit" className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
                   Submit
                 </button>
               </div>
