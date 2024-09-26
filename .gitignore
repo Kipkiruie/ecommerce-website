@@ -21,18 +21,4 @@ yarn-error.log
 /.vscode
 /.zed
 
-# EXCLUDE THIS IN THE FIRST PUSH
-artisan 
-composer.json 
-composer.lock 
-jsconfig.json 
-package.json 
-package-lock.json 
-phpunit.xml 
-postcss.config.js 
-README.md 
-tailwind.config.js 
-vite.config.js
-/resources
-
 
