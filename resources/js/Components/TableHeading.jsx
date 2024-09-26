@@ -9,7 +9,7 @@ export default function TableHeading({
   children,
 }) {
   return (
-    <th onClick={() => sortChanged(name)}>
+    <th onClick={(e) => sortChanged(name)}>
       <div className="px-3 py-3 flex items-center justify-between gap-1 cursor-pointer">
         {children}
         {sortable && (
@@ -19,7 +19,7 @@ export default function TableHeading({
                 "w-4 " +
                 (sort_field === name && sort_direction === "asc"
                   ? "text-white"
-                  : "text-gray-400")
+                  : "")
               }
             />
             <ChevronDownIcon
@@ -27,7 +27,7 @@ export default function TableHeading({
                 "w-4 -mt-2 " +
                 (sort_field === name && sort_direction === "desc"
                   ? "text-white"
-                  : "text-gray-400")
+                  : "")
               }
             />
           </div>
