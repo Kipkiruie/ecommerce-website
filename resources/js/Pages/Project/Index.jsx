@@ -194,7 +194,7 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                         <td className="px-3 py-2 text-nowrap">
                           {project.due_date}
                         </td>
-                        <td className="px-3 py-2">{project.createdBy.name}</td>
+                        {project.createdBy ? project.createdBy.name : "Unknown"}
                         <td className="px-3 py-2 text-nowrap">
                           <Link
                             href={route("project.edit", project.id)}
